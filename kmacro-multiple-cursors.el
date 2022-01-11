@@ -33,6 +33,9 @@
 
 ;;; Code:
 
+(require 'kmacro)
+
+
 (defgroup kmacro-mc nil
   "Multiple cursors emulation with keyboard macros."
   :group 'kmacro)
