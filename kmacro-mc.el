@@ -3,6 +3,7 @@
 ;; Copyright (C) 2022  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski
+;; URL: https://github.com/vifon/kmacro-mc.el
 ;; Keywords: convenience
 ;; Version: 0.9
 ;; Package-Requires: ((emacs "27.2"))
