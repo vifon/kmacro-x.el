@@ -1,4 +1,4 @@
-;;; kmacro-multiple-cursors.el --- Multiple cursors emulation with keyboard macros  -*- lexical-binding: t; -*-
+;;; kmacro-mc.el --- Multiple cursors emulation with keyboard macros  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Wojciech Siewierski
 
@@ -72,5 +72,5 @@ highlight later."
     (start-kbd-macro 'append 'no-exec)))
 
 
-(provide 'kmacro-multiple-cursors)
-;;; kmacro-multiple-cursors.el ends here
+(provide 'kmacro-mc)
+;;; kmacro-mc.el ends here

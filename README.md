@@ -1,5 +1,5 @@
-kmacro-multiple-cursors
-=======================
+kmacro-mc
+=========
 
 A set of Emacs commands to facilitate the usual multiple-cursors
 workflows with the use of regular keyboard macros (kmacros).  This way
@@ -14,7 +14,7 @@ INSTALLATION
 ------------
 
 ```elisp
-(use-package kmacro-multiple-cursors
-  :straight (:host github :repo "vifon/kmacro-multiple-cursors.el")
+(use-package kmacro-mc
+  :straight (:host github :repo "vifon/kmacro-mc.el")
   :bind ("C-c k" . kmacro-mc-region))
 ```
