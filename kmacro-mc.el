@@ -45,6 +45,16 @@
   '((t (:inherit hi-yellow)))  ;`highlight-regexp' hardcodes `hi-yellow'
   "The face used by `kmacro-mc-region'.")
 
+(defcustom kmacro-mc-region-sequence-fmt "C-s %s C-r RET 2*C-s RET"
+  "The sequence of keys used by `kmacro-mc-region'.
+
+This sequence should search for the next occurrence of the query
+and leave the region in a predictable state for the user to use.
+
+The search query will be spliced into it using `format', and so
+it should contain exactly one `%s' placeholder."
+  :type 'string)
+
 
 ;;;###autoload
 (defun kmacro-mc-region (start end &optional highlight)
@@ -65,7 +75,7 @@ highlight later."
     (deactivate-mark)
     (kmacro-push-ring)
     (setq last-kbd-macro
-          (read-kbd-macro (format "C-s %s C-r RET 2*C-s RET"
+          (read-kbd-macro (format kmacro-mc-region-sequence-fmt
                                   (format-kbd-macro query))))
     (when highlight
       (highlight-regexp (regexp-quote query)
