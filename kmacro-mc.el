@@ -38,8 +38,8 @@
 ;;    a trivial case: a symbol to be renamed).
 ;; 2. M-x kmacro-mc-region RET
 ;; 3. Do the necessary edits, either within the region or in its
-;;    vicinity outside of it (this is the part that cannot be
-;;    achieved with other mc alternatives such as iedit).
+;;    vicinity outside of it (this is the part that cannot be achieved
+;;    with other mc alternatives such as iedit or query-replace).
 ;;    They will get recorded as a kmacro.
 ;; 4. Press any key that would end the kmacro recording:
 ;;    F4, C-x ) or C-x C-k C-k
