@@ -32,6 +32,19 @@
 ;; It is assumed the user didn't rebind the basic isearch commands,
 ;; otherwise the behavior may be unpredictable.
 
+;; A typical workflow with `kmacro-mc-region':
+;;
+;; 1. Select the text whose occurences are to be manipulated (in
+;;    a trivial case: a symbol to be renamed).
+;; 2. M-x kmacro-mc-region RET
+;; 3. Do the necessary edits, either within the region or in its
+;;    vicinity outside of it (this is the part that cannot be
+;;    achieved with other mc alternatives such as iedit).
+;;    They will get recorded as a kmacro.
+;; 4. Press any key that would end the kmacro recording:
+;;    F4, C-x ) or C-x C-k C-k
+;; 5. Repeat the kmacro with F4, C-x e or C-x C-k C-k.
+
 ;;; Code:
 
 (require 'kmacro)
@@ -65,9 +78,11 @@ the rest of the recorded kmacro.  During the kmacro execution,
 mark is always at the beginning of the match and point is at
 the end.
 
-With prefix argument highlight the query using
-`highlight-regexp'.  Use `\\[unhighlight-regexp]' to remove the
-highlight later."
+START and END mark the region.
+
+If HIGHLIGHT is non-nil (or with the prefix argument when using
+interactively) highlight the query using `highlight-regexp'.
+Use `\\[unhighlight-regexp]' to remove the highlight later."
   (interactive "r\nP")
   (let ((query (buffer-substring-no-properties start end)))
     (when (< (point) (mark))
