@@ -98,5 +98,44 @@ Use `\\[unhighlight-regexp]' to remove the highlight later."
     (start-kbd-macro 'append 'no-exec)))
 
 
+;;;###autoload
+(define-minor-mode kmacro-mc-atomic-undo-mode
+  "Undo the kmacro executions atomically."
+  :global t
+  :require 'kmacro-mc
+  :lighter " atomic-kmacro"
+  (if kmacro-mc-atomic-undo-mode
+      (progn
+        ;; Seemingly advising `execute-kbd-macro' should suffice, but
+        ;; that's not true.  It might get called either from Elisp or
+        ;; from `call-last-kbd-macro' which is a C function and so the
+        ;; advice wouldn't apply for this call.  So we advice both to
+        ;; cover hopefully all the possible entry points.
+        (advice-add #'execute-kbd-macro :around
+                    #'kmacro-mc-undo-amalgamate-advice)
+        (advice-add #'call-last-kbd-macro :around
+                    #'kmacro-mc-undo-amalgamate-advice))
+    (advice-remove #'execute-kbd-macro
+                   #'kmacro-mc-undo-amalgamate-advice)
+    (advice-remove #'call-last-kbd-macro
+                   #'kmacro-mc-undo-amalgamate-advice)))
+
+(defun kmacro-mc-undo-amalgamate-advice (orig &rest args)
+  "Advice the ORIG function to amalgamate all the actions into one undo.
+
+ARGS are passed verbatim to ORIG.
+
+An undo boundary is being placed to ensure the consecutive calls
+won't get auto-amalgamated."
+  (undo-boundary)
+  (let ((cg (prepare-change-group)))
+    (unwind-protect
+        (progn
+          (activate-change-group cg)
+          (apply orig args))
+      (undo-amalgamate-change-group cg)
+      (accept-change-group cg))))
+
+
 (provide 'kmacro-mc)
 ;;; kmacro-mc.el ends here
