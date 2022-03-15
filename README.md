@@ -1,8 +1,8 @@
 kmacro-x
 ========
 
-A collection of commands, modes and functions building on top of the
-keyboard macros (kmacros) system.
+A collection of Emacs commands, modes and functions building on top of
+the keyboard macros (kmacros) system.
 
 INSTALLATION
 ------------
