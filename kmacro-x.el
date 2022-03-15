@@ -1,9 +1,9 @@
-;;; kmacro-mc.el --- Multiple cursors emulation with keyboard macros  -*- lexical-binding: t; -*-
+;;; kmacro-x.el --- Keyboard macro helpers and extensions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski
-;; URL: https://github.com/vifon/kmacro-mc.el
+;; URL: https://github.com/vifon/kmacro-x.el
 ;; Keywords: convenience
 ;; Version: 0.9
 ;; Package-Requires: ((emacs "27.2"))
@@ -23,43 +23,24 @@
 
 ;;; Commentary:
 
-;; A set of commands to facilitate the usual multiple-cursors
-;; workflows with the use of regular keyboard macros (kmacros).
-;; This way all the pitfalls of rolling a custom implementation are
-;; avoided, while all the kmacro facilities, such as counters, queries
-;; and kmacro editing, are gained virtually for free.
-
-;; It is assumed the user didn't rebind the basic isearch commands,
-;; otherwise the behavior may be unpredictable.
-
-;; A typical workflow with `kmacro-mc-region':
-;;
-;; 1. Select the text whose occurences are to be manipulated (in
-;;    a trivial case: a symbol to be renamed).
-;; 2. M-x kmacro-mc-region RET
-;; 3. Do the necessary edits, either within the region or in its
-;;    vicinity outside of it (this is the part that cannot be achieved
-;;    with other mc alternatives such as iedit or query-replace).
-;;    They will get recorded as a kmacro.
-;; 4. Press any key that would end the kmacro recording:
-;;    F4, C-x ) or C-x C-k C-k
-;; 5. Repeat the kmacro with F4, C-x e or C-x C-k C-k.
+;; A collection of commands, modes and functions building on top of
+;; the keyboard macros (kmacros) system.
 
 ;;; Code:
 
 (require 'kmacro)
 
 
-(defgroup kmacro-mc nil
-  "Multiple cursors emulation with keyboard macros."
+(defgroup kmacro-x nil
+  "Keyboard macro helpers and extensions."
   :group 'kmacro)
 
-(defface kmacro-mc-highlight-face
+(defface kmacro-x-highlight-face
   '((t (:inherit hi-yellow)))  ;`highlight-regexp' hardcodes `hi-yellow'
-  "The face used by `kmacro-mc-region'.")
+  "The face used by `kmacro-x-mc-region'.")
 
-(defcustom kmacro-mc-region-sequence-fmt "C-s %s C-r RET 2*C-s RET"
-  "The sequence of keys used by `kmacro-mc-region'.
+(defcustom kmacro-x-mc-region-sequence-fmt "C-s %s C-r RET 2*C-s RET"
+  "The sequence of keys used by `kmacro-x-mc-region'.
 
 This sequence should search for the next occurrence of the query
 and leave the region in a predictable state for the user to use.
@@ -70,7 +51,7 @@ it should contain exactly one `%s' placeholder."
 
 
 ;;;###autoload
-(defun kmacro-mc-region (start end &optional highlight)
+(defun kmacro-x-mc-region (start end &optional highlight)
   "Record a keyboard macro emulating multiple cursors.
 
 The kmacro will first search for current region and then execute
@@ -90,21 +71,21 @@ Use `\\[unhighlight-regexp]' to remove the highlight later."
     (deactivate-mark)
     (kmacro-push-ring)
     (setq last-kbd-macro
-          (read-kbd-macro (format kmacro-mc-region-sequence-fmt
+          (read-kbd-macro (format kmacro-x-mc-region-sequence-fmt
                                   (format-kbd-macro query))))
     (when highlight
       (highlight-regexp (regexp-quote query)
-                        'kmacro-mc-highlight-face))
+                        'kmacro-x-mc-highlight-face))
     (start-kbd-macro 'append 'no-exec)))
 
 
 ;;;###autoload
-(define-minor-mode kmacro-mc-atomic-undo-mode
+(define-minor-mode kmacro-x-atomic-undo-mode
   "Undo the kmacro executions atomically."
   :global t
-  :require 'kmacro-mc
+  :require 'kmacro-x
   :lighter " atomic-kmacro"
-  (if kmacro-mc-atomic-undo-mode
+  (if kmacro-x-atomic-undo-mode
       (progn
         ;; Seemingly advising `execute-kbd-macro' should suffice, but
         ;; that's not true.  It might get called either from Elisp or
@@ -112,21 +93,21 @@ Use `\\[unhighlight-regexp]' to remove the highlight later."
         ;; advice wouldn't apply for this call.  So we advice both to
         ;; cover hopefully all the possible entry points.
         (advice-add #'execute-kbd-macro :around
-                    #'kmacro-mc-undo-amalgamate-advice)
+                    #'kmacro-x-undo-amalgamate-advice)
         (advice-add #'call-last-kbd-macro :around
-                    #'kmacro-mc-undo-amalgamate-advice))
+                    #'kmacro-x-undo-amalgamate-advice))
     (advice-remove #'execute-kbd-macro
-                   #'kmacro-mc-undo-amalgamate-advice)
+                   #'kmacro-x-undo-amalgamate-advice)
     (advice-remove #'call-last-kbd-macro
-                   #'kmacro-mc-undo-amalgamate-advice)))
+                   #'kmacro-x-undo-amalgamate-advice)))
 
-(defun kmacro-mc-undo-amalgamate-advice (orig &rest args)
-  "Advice the ORIG function to amalgamate all the actions into one undo.
+(defun kmacro-x-undo-amalgamate-advice (orig &rest args)
+  "Advice the ORIG function to amalgamate all the changes into one undo.
 
 ARGS are passed verbatim to ORIG.
 
-An undo boundary is being placed to ensure the consecutive calls
-won't get auto-amalgamated."
+An undo boundary is placed beforehand to ensure the consecutive
+calls won't get auto-amalgamated."
   (undo-boundary)
   (let ((cg (prepare-change-group)))
     (unwind-protect
@@ -137,5 +118,5 @@ won't get auto-amalgamated."
       (accept-change-group cg))))
 
 
-(provide 'kmacro-mc)
-;;; kmacro-mc.el ends here
+(provide 'kmacro-x)
+;;; kmacro-x.el ends here
