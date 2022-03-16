@@ -7,16 +7,15 @@ the keyboard macros (kmacros) system.
 INSTALLATION
 ------------
 
-Installation with `straight.el`:
+`kmacro-x` is available on MELPA.  Example configuration with
+`use-package`:
 
 ```elisp
 (use-package kmacro-x
-  :straight (:host github :repo "vifon/kmacro-x.el")
+  :ensure t
   :init (kmacro-x-atomic-undo-mode 1)
   :bind ("C-c k" . kmacro-x-mc-region))
 ```
-
-Coming soon to MELPA.
 
 FEATURES
 --------
