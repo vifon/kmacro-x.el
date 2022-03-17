@@ -26,7 +26,7 @@ While this mode is enabled, the kmacro executions can be undo-ed
 atomically, as a single operation.  Often the user doesn't want to
 undo a single step of a kmacro but rather the kmacro as a whole.
 
-**kmacro-x-mc-region**
+**kmacro-x-mc**
 
 Emulates the typical multiple-cursors workflow using kmacros.
 This way all the pitfalls of rolling a custom implementation of
@@ -36,11 +36,11 @@ counters, queries and kmacro editing, are gained virtually for free.
 It is assumed the user didn't rebind the basic isearch commands,
 otherwise the behavior may be unpredictable.
 
-A typical workflow with `kmacro-x-mc-region`:
+A typical workflow with `kmacro-x-mc`:
 
 1. Select the text whose occurences are to be manipulated (in
    a trivial case: a symbol to be renamed).
-2. <kbd>M-x kmacro-x-mc-region RET</kbd>
+2. <kbd>M-x kmacro-x-mc RET</kbd>
 3. Do the necessary edits, either within the region or in its vicinity
    outside of it (this is the part that cannot be easily achieved with
    other mc alternatives such as iedit or query-replace).  They will
