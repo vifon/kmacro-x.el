@@ -94,8 +94,7 @@ If selection is active, it does the same thing as
 `kmacro-x-mc-region'.  If there is no active selection, it uses
 the symbol at point instead.
 
-See `kmacro-x-mc-region' for the START, END and
-HIGHLIGHT arguments."
+See `kmacro-x-mc-region' for the HIGHLIGHT argument."
   (interactive "P")
   (let ((bounds (if (use-region-p)
                     (cons (region-beginning) (region-end))
