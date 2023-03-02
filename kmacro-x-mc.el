@@ -117,6 +117,10 @@ necessary initialization."
       (call-last-kbd-macro)))
   (kmacro-x-mc-mode 0))
 
+;; Always treat the bulk macro application as a single undo operation.
+(advice-add #'kmacro-x-mc-apply :around
+            #'kmacro-x-undo-amalgamate-advice)
+
 (defun kmacro-x-mc-quit ()
   "Cancel the macro recording, disable `kmacro-x-mc-mode'.
 
