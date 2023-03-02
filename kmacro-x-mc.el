@@ -75,9 +75,10 @@ necessary initialization."
                    (overlay-end ov))))
 
     ;; Create a new cursor.
-    (if (if backwards
-            (search-backward-regexp kmacro-x-mc-regexp nil 'noerror)
-          (search-forward-regexp kmacro-x-mc-regexp nil 'noerror))
+    (if (let ((case-fold-search nil))
+          (if backwards
+              (search-backward-regexp kmacro-x-mc-regexp nil 'noerror)
+            (search-forward-regexp kmacro-x-mc-regexp nil 'noerror)))
         (let ((ov (make-overlay (match-beginning 0)
                                 (match-end 0))))
           (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
