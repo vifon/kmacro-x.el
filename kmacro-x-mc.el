@@ -83,7 +83,8 @@ necessary initialization."
                                 (match-end 0))))
           (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
 
-          ;; Store the offsets per cursor for future development.
+          ;; Store the offsets per cursor as mouse-created cursors
+          ;; have different offsets.
           (overlay-put ov 'offsets kmacro-x-mc-offsets)
 
           ;; Either append or prepend the new cursor.
@@ -103,6 +104,32 @@ necessary initialization."
   "Create a new fake cursor backwards."
   (interactive)
   (kmacro-x--mc-mark 'backwards))
+
+;;;###autoload
+(defun kmacro-x-mc-mark-at-click (event)
+  "Toggle the fake cursor at the mouse position.
+
+Some code borrowed from `mc/fake-cursor-at-point'."
+  (interactive "e")
+  (mouse-minibuffer-check event)
+  (let ((position (event-end event)))
+    (unless (windowp (posn-window position))
+      (user-error "Position not in text area of window"))
+    (select-window (posn-window position))
+    (let* ((point (posn-point position))
+           (overlays-at-point (overlays-at point)))
+      (if overlays-at-point
+          (dolist (ov overlays-at-point)
+            (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
+              (delete-overlay ov)
+              (setq kmacro-x-mc-cursors
+                    (delete ov kmacro-x-mc-cursors))))
+        (let ((ov (make-overlay point (1+ point) nil t)))
+          (unless kmacro-x-mc-mode
+            (kmacro-x-mc-mode 1))
+          (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
+          (overlay-put ov 'offsets '(0 . 0))
+          (push ov kmacro-x-mc-cursors))))))
 
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
@@ -152,7 +179,9 @@ omitted from the recorded macro to prevent premature termination."
   (if kmacro-x-mc-mode
       (let ((bounds (if (use-region-p)
                         (cons (region-beginning) (region-end))
-                      (bounds-of-thing-at-point 'symbol))))
+                      (or (bounds-of-thing-at-point 'symbol)
+                          ;; A technically correct fallback.
+                          (cons (point) (point))))))
 
         (let ((regexp (regexp-quote
                        (buffer-substring-no-properties
