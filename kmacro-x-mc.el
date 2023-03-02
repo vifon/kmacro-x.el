@@ -216,3 +216,4 @@ omitted from the recorded macro to prevent premature termination."
     (kill-local-variable 'kmacro-x-mc-cursors)))
 
 (provide 'kmacro-x-mc)
+;;; kmacro-x-mc.el ends here
