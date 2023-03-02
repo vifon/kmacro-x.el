@@ -1,6 +1,6 @@
 ;;; kmacro-x.el --- Keyboard macro helpers and extensions  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022  Wojciech Siewierski
+;; Copyright (C) 2022-2023  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski
 ;; URL: https://github.com/vifon/kmacro-x.el
@@ -34,77 +34,6 @@
 (defgroup kmacro-x nil
   "Keyboard macro helpers and extensions."
   :group 'kmacro)
-
-(defface kmacro-x-highlight-face
-  '((t (:inherit hi-yellow)))  ;`highlight-regexp' hardcodes `hi-yellow'
-  "The face used by `kmacro-x-mc-region'.")
-
-(defcustom kmacro-x-mc-region-sequence-fmt "C-s %s C-r RET 2*C-s RET"
-  "The sequence of keys used by `kmacro-x-mc-region'.
-
-This sequence should search for the next occurrence of the query
-and leave the region in a predictable state for the user to use.
-
-The search query will be spliced into it using `format', and so
-it should contain exactly one `%s' placeholder."
-  :type 'string)
-
-
-;;;###autoload
-(defun kmacro-x-mc-region (start end &optional highlight)
-  "Record a keyboard macro emulating multiple cursors.
-
-The kmacro will first search for current region and then execute
-the rest of the recorded kmacro.  During the kmacro execution,
-mark is always at the beginning of the match and point is at
-the end.
-
-START and END mark the region.
-
-If HIGHLIGHT is non-nil (or with the prefix argument when using
-interactively) highlight the query using `highlight-regexp'.
-Use `\\[unhighlight-regexp]' to remove the highlight later."
-  (interactive "r\nP")
-  (unless (and (= start (region-beginning))
-               (= end (region-end)))
-    ;; Ensure a consistent behavior when called interactively and when
-    ;; called from Elisp with arguments not being the current region.
-    ;; Considering the interactive nature of the kmacros, tampering
-    ;; with the user's region seems very much justified.
-    (push-mark start)
-    (goto-char end))
-  (let ((query (buffer-substring-no-properties start end)))
-    (when (< (point) (mark))
-      (exchange-point-and-mark))
-    (deactivate-mark)
-    (kmacro-push-ring)
-    (setq last-kbd-macro
-          (read-kbd-macro (format kmacro-x-mc-region-sequence-fmt
-                                  (format-kbd-macro query))))
-    (when highlight
-      (highlight-regexp (regexp-quote query)
-                        'kmacro-x-mc-highlight-face))
-    (start-kbd-macro 'append 'no-exec)))
-
-;;;###autoload
-(defun kmacro-x-mc (&optional highlight)
-  "A more user friendly version of `kmacro-x-mc-region'.
-
-If selection is active, it does the same thing as
-`kmacro-x-mc-region'.  If there is no active selection, it uses
-the symbol at point instead.
-
-See `kmacro-x-mc-region' for the HIGHLIGHT argument."
-  (interactive "P")
-  (let ((bounds (if (use-region-p)
-                    (cons (region-beginning) (region-end))
-                  (bounds-of-thing-at-point 'symbol))))
-    (unless bounds
-      (error "%s" "No region or symbol to act on"))
-    (let ((start (car bounds))
-          (end (cdr bounds)))
-      (kmacro-x-mc-region start end highlight))))
-
 
 ;;;###autoload
 (define-minor-mode kmacro-x-atomic-undo-mode

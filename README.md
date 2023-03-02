@@ -14,7 +14,8 @@ INSTALLATION
 (use-package kmacro-x
   :ensure t
   :init (kmacro-x-atomic-undo-mode 1)
-  :bind ("C-c k" . kmacro-x-mc-region))
+  :bind (("C-<" . kmacro-x-mc-mark-previous)
+         ("C->" . kmacro-x-mc-mark-next)))
 ```
 
 FEATURES
@@ -33,19 +34,12 @@ This way all the pitfalls of rolling a custom implementation of
 multiple-cursors are avoided, while all the kmacro facilities, such as
 counters, queries and kmacro editing, are gained virtually for free.
 
-It is assumed the user didn't rebind the basic isearch commands,
-otherwise the behavior may be unpredictable.
+Usage:
 
-A typical workflow with `kmacro-x-mc`:
-
-1. Select the text whose occurences are to be manipulated (in
-   a trivial case: a symbol to be renamed).
-2. <kbd>M-x kmacro-x-mc RET</kbd>
-3. Do the necessary edits, either within the region or in its vicinity
-   outside of it (this is the part that cannot be easily achieved with
-   other mc alternatives such as iedit or query-replace).  They will
-   get recorded as a kmacro.
-4. Press any key that would end the kmacro recording:
-   <kbd>F4</kbd>, <kbd>C-x )</kbd> or <kbd>C-x C-k C-k</kbd>
-5. Repeat the kmacro with <kbd>F4</kbd>, <kbd>C-x e</kbd> or
-   <kbd>C-x C-k C-k</kbd>.
+1. `kmacro-x-mc-mark-next` and `kmacro-x-mc-mark-previous` are used to
+   find the next/previous occurrence of the symbol at point (or the
+   region if active) and create a fake cursor/selection at
+   its position.
+2. Some arbitrary actions are being performed.
+3. `RET` can be used to apply the actions to all the other cursors or
+   `C-g` can be used to abort the bulk operation.
