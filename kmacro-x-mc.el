@@ -150,8 +150,9 @@ omitted from the recorded macro to prevent premature termination."
       (deactivate-mark)
     (kmacro-x-mc-mode 0)
 
-    ;; Make sure the macro recording is cancelled.  Since it's bound
-    ;; to `C-g', it might be a good idea to call it anyway.
+    ;; Make sure the macro recording is cancelled.  Since this command
+    ;; is bound to `C-g', it might be a good idea to call the original
+    ;; `C-g' command anyway.
     (keyboard-quit)))
 
 
