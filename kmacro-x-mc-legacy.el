@@ -64,7 +64,8 @@ If HIGHLIGHT is non-nil (or with the prefix argument when using
 interactively) highlight the query using `highlight-regexp'.
 Use `\\[unhighlight-regexp]' to remove the highlight later."
   (interactive "r\nP")
-  (unless (and (= start (region-beginning))
+  (unless (and (mark)
+               (= start (region-beginning))
                (= end (region-end)))
     ;; Ensure a consistent behavior when called interactively and when
     ;; called from Elisp with arguments not being the current region.
