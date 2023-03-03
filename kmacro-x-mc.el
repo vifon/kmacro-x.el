@@ -36,6 +36,10 @@
   '((t (:inverse-video t)))
   "The face used for the fake cursors created in `kmacro-x-mc-mode'.")
 
+(defface kmacro-x-mc-main-cursor-face
+  '((t (:underline t)))
+  "The face used for the original cursor when using `kmacro-x-mc-mode'.")
+
 (defvar-local kmacro-x-mc-regexp nil
   "A regexp matching the intended cursor positions.")
 
@@ -110,7 +114,7 @@ necessary initialization."
   (interactive)
   (end-kbd-macro)
   (dolist (ov kmacro-x-mc-cursors)
-    (unless (overlay-get ov 'main-cursor)
+    (unless (eq (overlay-get ov 'face) 'kmacro-x-mc-main-cursor-face)
       (goto-char (+ (overlay-start ov)
                     (car (overlay-get ov 'offsets))))
       (push-mark (+ (overlay-start ov)
@@ -169,7 +173,7 @@ omitted from the recorded macro to prevent premature termination."
                         (concat "\\_<" regexp "\\_>"))))
 
         (let ((ov (make-overlay (car bounds) (cdr bounds))))
-          (overlay-put ov 'main-cursor t)
+          (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
           (setq-local kmacro-x-mc-cursors (list ov)))
 
         (unless (use-region-p)
