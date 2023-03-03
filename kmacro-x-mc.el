@@ -77,14 +77,17 @@ Example, with | being the point and ^ being the mark:
 (defvar-local kmacro-x-mc-cursors nil
   "The overlays for displaying and keeping the cursor positions.")
 
-(defun kmacro-x-mc--mark (replace &optional backwards)
+(defun kmacro-x-mc--mark (prefix &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
 
 Used internally by `kmacro-x-mc-mark-next' and
 `kmacro-x-mc-mark-previous'.
 
-With the REPLACE argument, remove the last cursor and replace it
+With the PREFIX argument, replace the last cursor and prefix it
 with the new one, essentially skipping one occurence of a match.
+
+If `kmacro-x-mc-mode' isn't enabled yet, PREFIX instead inverts
+the `kmacro-x-mc-mark-whole-symbol' setting.
 
 Enables `kmacro-x-mc-mode' if not enabled yet, for the
 necessary initialization."
@@ -97,7 +100,13 @@ necessary initialization."
     (user-error "This command can only be used when starting a bulk edit"))
 
   (unless kmacro-x-mc-mode
-    (kmacro-x-mc-mode 1))
+    (let ((kmacro-x-mc-mark-whole-symbol
+           ;; On the first call, use `prefix' to invert the
+           ;; `kmacro-x-mc-mark-whole-symbol' setting.
+           (if prefix
+               (not kmacro-x-mc-mark-whole-symbol)
+             kmacro-x-mc-mark-whole-symbol)))
+      (kmacro-x-mc-mode 1)))
 
   ;; This function is always being called while a macro is being
   ;; recorded, but we do not want it to become a part of the macro.
@@ -125,7 +134,7 @@ necessary initialization."
           ;; have different offsets.
           (overlay-put ov 'offsets kmacro-x-mc-offsets)
 
-          (if replace
+          (if prefix
               ;; Replace the first or last cursor with the new one.
               (let ((old-cursor (if backwards
                                     kmacro-x-mc-cursors
@@ -139,31 +148,33 @@ necessary initialization."
       (message "No further matches"))))
 
 ;;;###autoload
-(defun kmacro-x-mc-mark-next (&optional replace)
+(defun kmacro-x-mc-mark-next (&optional prefix)
   "Create a new fake cursor forward.
 
 When region is active, create the cursor at the next occurrence
 of the selection.  When region is inactive, look for the symbol
 at point instead.
 
-With the REPLACE prefix argument, remove the last cursor and
-replace it with the new one, essentially skipping one occurence
-of a match.
+With the PREFIX argument, replace the last cursor and prefix it
+with the new one, essentially skipping one occurence of a match.
+
+If `kmacro-x-mc-mode' isn't enabled yet, PREFIX instead inverts
+the `kmacro-x-mc-mark-whole-symbol' setting.
 
 Activates `kmacro-x-mc-mode' with its keymap being used to either
 apply or abort the bulk edit.
 
 See also: `kmacro-x-mc-mark-previous'"
   (interactive "P")
-  (kmacro-x-mc--mark replace))
+  (kmacro-x-mc--mark prefix))
 
 ;;;###autoload
-(defun kmacro-x-mc-mark-previous (&optional replace)
+(defun kmacro-x-mc-mark-previous (&optional prefix)
   "Create a new fake cursor backwards.
 
 See `kmacro-x-mc-mark-next' for the details."
   (interactive "P")
-  (kmacro-x-mc--mark replace 'backwards))
+  (kmacro-x-mc--mark prefix 'backwards))
 
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
