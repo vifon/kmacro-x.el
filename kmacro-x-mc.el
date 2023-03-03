@@ -60,7 +60,7 @@
 (defvar-local kmacro-x-mc-cursors nil
   "The overlays for displaying and keeping the cursor positions.")
 
-(defun kmacro-x--mc-mark (&optional backwards)
+(defun kmacro-x--mc-mark (replace &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
 
 Enables `kmacro-x-mc-mode' if not enabled yet, for the
@@ -102,23 +102,43 @@ necessary initialization."
           ;; have different offsets.
           (overlay-put ov 'offsets kmacro-x-mc-offsets)
 
-          ;; Either append or prepend the new cursor.
-          (if backwards
-              (push ov kmacro-x-mc-cursors)
-            (setq kmacro-x-mc-cursors (append kmacro-x-mc-cursors (list ov)))))
+          (if replace
+              ;; Replace the first or last cursor with the new one.
+              (let ((old-cursor (if backwards
+                                    kmacro-x-mc-cursors
+                                  (last kmacro-x-mc-cursors))))
+                (delete-overlay (car old-cursor))
+                (setcar old-cursor ov))
+            ;; Either append or prepend the new cursor.
+            (if backwards
+                (push ov kmacro-x-mc-cursors)
+              (setq kmacro-x-mc-cursors (append kmacro-x-mc-cursors (list ov))))))
       (message "No further matches"))))
 
 ;;;###autoload
-(defun kmacro-x-mc-mark-next ()
-  "Create a new fake cursor forward."
-  (interactive)
-  (kmacro-x--mc-mark))
+(defun kmacro-x-mc-mark-next (&optional replace)
+  "Create a new fake cursor forward.
+
+When region is active, create the cursor at the next occurrence
+of the selection.  When region is inactive, look for the symbol
+at point instead.
+
+With the REPLACE prefix argument, remove the last cursor and
+replace it with the new one, essentially skipping one occurence
+of a match.
+
+Activates `kmacro-x-mc-mode' with its keymap being used to either
+apply or abort the bulk edit."
+  (interactive "P")
+  (kmacro-x--mc-mark replace))
 
 ;;;###autoload
-(defun kmacro-x-mc-mark-previous ()
-  "Create a new fake cursor backwards."
-  (interactive)
-  (kmacro-x--mc-mark 'backwards))
+(defun kmacro-x-mc-mark-previous (&optional replace)
+  "Create a new fake cursor backwards.
+
+See `kmacro-x-mc-mark-next' for the details."
+  (interactive "P")
+  (kmacro-x--mc-mark replace 'backwards))
 
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
