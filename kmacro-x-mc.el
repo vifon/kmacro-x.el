@@ -155,10 +155,6 @@ See `kmacro-x-mc-mark-next' for the details."
   (run-hooks 'kmacro-x-mc-post-apply-hook)
   (kmacro-x-mc-mode 0))
 
-;; Always treat the bulk macro application as a single undo operation.
-(advice-add #'kmacro-x-mc-apply :around
-            #'kmacro-x-undo-amalgamate-advice)
-
 (defun kmacro-x-mc-quit ()
   "Cancel the macro recording, disable `kmacro-x-mc-mode'.
 
@@ -227,6 +223,20 @@ omitted from the recorded macro to prevent premature termination."
     (kill-local-variable 'kmacro-x-mc-regexp)
     (kill-local-variable 'kmacro-x-mc-offsets)
     (kill-local-variable 'kmacro-x-mc-cursors)))
+
+(define-minor-mode kmacro-x-mc-atomic-undo-mode
+  "Undo the whole `kmacro-x-mc-mode' bulk operation at once.
+
+Note: The original actions used for the macro recording are not
+undone, only the the macro executions (called from
+`kmacro-x-mc-apply')."
+  :global t
+  :require 'kmacro-x-mc
+  (if kmacro-x-mc-atomic-undo-mode
+      (advice-add #'kmacro-x-mc-apply :around
+                  #'kmacro-x-undo-amalgamate-advice)
+    (advice-remove #'kmacro-x-mc-apply
+                   #'kmacro-x-undo-amalgamate-advice)))
 
 (provide 'kmacro-x-mc)
 ;;; kmacro-x-mc.el ends here
