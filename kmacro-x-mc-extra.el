@@ -46,12 +46,13 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
     (select-window (posn-window position))
     (let* ((point (posn-point position))
            (overlays-at-point (overlays-at point)))
-      (if overlays-at-point
-          (dolist (ov overlays-at-point)
-            (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
-              (delete-overlay ov)
-              (setq kmacro-x-mc-cursors
-                    (delete ov kmacro-x-mc-cursors))))
+      (unless (catch 'cursor
+                (dolist (ov overlays-at-point)
+                  (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
+                    (delete-overlay ov)
+                    (setq kmacro-x-mc-cursors
+                          (delete ov kmacro-x-mc-cursors))
+                    (throw 'cursor ov))))
         (let ((ov (make-overlay point (1+ point) nil t)))
           (unless kmacro-x-mc-mode
             (let ((kmacro-x-mc-mark-whole-symbol nil))
