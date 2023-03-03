@@ -186,7 +186,6 @@ omitted from the recorded macro to prevent premature termination."
   "Record a keyboard macro to apply with multiple cursors.
 
 \\{kmacro-x-mc-mode-map}"
-  :require 'macro-x
   :lighter " kmacro-mc"
   (if kmacro-x-mc-mode
       (let ((bounds (if (use-region-p)
