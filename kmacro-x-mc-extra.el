@@ -30,7 +30,7 @@
 (require 'kmacro-x-mc)
 
 (defgroup kmacro-x-mc-extra nil
-  "Additional functionality for the multiple cursors"
+  "Additional functionality for the multiple cursors."
   :group 'kmacro-x-mc)
 
 ;;;###autoload
