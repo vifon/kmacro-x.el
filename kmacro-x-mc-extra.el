@@ -74,5 +74,28 @@ Some code borrowed from `mc/fake-cursor-at-point'."
       (rectangle-mark-mode 1))
     (rectangle-next-line)))
 
+
+(defun kmacro-x-mc-pause ()
+  "Pause the macro recording to allow free movement."
+  (interactive)
+  (if defining-kbd-macro
+      (progn
+        (cancel-kbd-macro-events)
+        (save-excursion
+          ;; The docs say to not set `defining-kbd-macro', so let's do
+          ;; exactly this.  I believe setting it from nil to t would be bad,
+          ;; but setting it from t to nil should be just enough to pause the
+          ;; macro recording.  From a cursory research, Magit sets it to nil
+          ;; manually too, so we should be fine.
+          (let ((defining-kbd-macro nil))
+            (recursive-edit))))
+    (call-interactively #'scroll-up-command)))
+
+;;;###autoload
+(defun kmacro-x-mc-enable-pause ()
+  "Bind the experimental pause functionality."
+  (interactive)
+  (define-key kmacro-x-mc-mode-map (kbd "C-v") #'kmacro-x-mc-pause))
+
 (provide 'kmacro-x-mc-extra)
 ;;; kmacro-x-mc-extra.el ends here
