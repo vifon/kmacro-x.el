@@ -69,8 +69,8 @@ necessary initialization."
   ;; Sanity check to prevent defining cursors with inconsistent
   ;; starting conditions.
   (when (and kmacro-x-mc-mode
-             (not (member last-command '(kmacro-x-mc-mark-next
-                                         kmacro-x-mc-mark-previous))))
+             (not (memq last-command '(kmacro-x-mc-mark-next
+                                       kmacro-x-mc-mark-previous))))
     (user-error "This command can only be used when starting a bulk edit"))
 
   (unless kmacro-x-mc-mode
