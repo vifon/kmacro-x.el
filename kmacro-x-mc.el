@@ -40,6 +40,14 @@
   '((t (:underline t)))
   "The face used for the original cursor when using `kmacro-x-mc-mode'.")
 
+(defcustom kmacro-x-mc-pre-apply-hook nil
+  "Functions to run before applying the recorded keyboard macro to cursors."
+  :type 'hook)
+
+(defcustom kmacro-x-mc-post-apply-hook nil
+  "Functions to run after applying the recorded keyboard macro to cursors."
+  :type 'hook)
+
 (defvar-local kmacro-x-mc-regexp nil
   "A regexp matching the intended cursor positions.")
 
@@ -113,6 +121,7 @@ necessary initialization."
   "Apply the recoded macro for each cursor."
   (interactive)
   (end-kbd-macro)
+  (run-hooks 'kmacro-x-mc-pre-apply-hook)
   (dolist (ov kmacro-x-mc-cursors)
     (unless (eq (overlay-get ov 'face) 'kmacro-x-mc-main-cursor-face)
       (goto-char (+ (overlay-start ov)
@@ -120,6 +129,7 @@ necessary initialization."
       (push-mark (+ (overlay-start ov)
                     (cdr (overlay-get ov 'offsets))))
       (call-last-kbd-macro)))
+  (run-hooks 'kmacro-x-mc-post-apply-hook)
   (kmacro-x-mc-mode 0))
 
 ;; Always treat the bulk macro application as a single undo operation.
