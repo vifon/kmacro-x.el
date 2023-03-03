@@ -90,6 +90,9 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
           ;; macro recording.  From a cursory research, Magit sets it to nil
           ;; manually too, so we should be fine.
           (let ((defining-kbd-macro nil))
+            (message "%s" (substitute-command-keys
+                           "Macro recording paused, press \
+`\\[exit-recursive-edit]' to exit recursive edit"))
             (recursive-edit))))
     (call-interactively #'scroll-up-command)))
 
