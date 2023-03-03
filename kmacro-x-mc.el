@@ -224,6 +224,7 @@ omitted from the recorded macro to prevent premature termination."
     (kill-local-variable 'kmacro-x-mc-offsets)
     (kill-local-variable 'kmacro-x-mc-cursors)))
 
+;;;###autoload
 (define-minor-mode kmacro-x-mc-atomic-undo-mode
   "Undo the whole `kmacro-x-mc-mode' bulk operation at once.
 
