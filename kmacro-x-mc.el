@@ -155,7 +155,9 @@ omitted from the recorded macro to prevent premature termination."
                         (cons (region-beginning) (region-end))
                       (or (bounds-of-thing-at-point 'symbol)
                           ;; A technically correct fallback.
-                          (cons (point) (point))))))
+                          ;; Relevant mostly for the alternative ways to
+                          ;; create cursors such as mouse clicks.
+                          (cons (point) (1+ (point)))))))
 
         (let ((regexp (regexp-quote
                        (buffer-substring-no-properties
