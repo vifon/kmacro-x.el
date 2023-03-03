@@ -24,6 +24,9 @@
 
 ;; Efficient multiple cursors implemented using keyboard macros.
 
+;; Loosely inspired by https://github.com/corytertel/macrursors and
+;; obviously https://github.com/magnars/multiple-cursors.el
+
 ;;; Code:
 
 (require 'kmacro-x)
