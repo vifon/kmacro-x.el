@@ -54,7 +54,8 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
                     (delete ov kmacro-x-mc-cursors))))
         (let ((ov (make-overlay point (1+ point) nil t)))
           (unless kmacro-x-mc-mode
-            (kmacro-x-mc-mode 1))
+            (let ((kmacro-x-mc-mark-whole-symbol nil))
+              (kmacro-x-mc-mode 1)))
           (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
           (overlay-put ov 'offsets '(0 . 0))
           (push ov kmacro-x-mc-cursors))))))
