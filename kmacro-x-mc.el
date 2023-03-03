@@ -60,7 +60,7 @@
 (defvar-local kmacro-x-mc-cursors nil
   "The overlays for displaying and keeping the cursor positions.")
 
-(defun kmacro-x--mc-mark (replace &optional backwards)
+(defun kmacro-x-mc--mark (replace &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
 
 Enables `kmacro-x-mc-mode' if not enabled yet, for the
@@ -130,7 +130,7 @@ of a match.
 Activates `kmacro-x-mc-mode' with its keymap being used to either
 apply or abort the bulk edit."
   (interactive "P")
-  (kmacro-x--mc-mark replace))
+  (kmacro-x-mc--mark replace))
 
 ;;;###autoload
 (defun kmacro-x-mc-mark-previous (&optional replace)
@@ -138,7 +138,7 @@ apply or abort the bulk edit."
 
 See `kmacro-x-mc-mark-next' for the details."
   (interactive "P")
-  (kmacro-x--mc-mark replace 'backwards))
+  (kmacro-x-mc--mark replace 'backwards))
 
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
