@@ -56,7 +56,7 @@ necessary initialization."
   (when (and kmacro-x-mc-mode
              (not (member last-command '(kmacro-x-mc-mark-next
                                          kmacro-x-mc-mark-previous))))
-    (user-error "This command can only be used when starting a bulk edit."))
+    (user-error "This command can only be used when starting a bulk edit"))
 
   (unless kmacro-x-mc-mode
     (kmacro-x-mc-mode 1))
@@ -104,32 +104,6 @@ necessary initialization."
   "Create a new fake cursor backwards."
   (interactive)
   (kmacro-x--mc-mark 'backwards))
-
-;;;###autoload
-(defun kmacro-x-mc-mark-at-click (event)
-  "Toggle the fake cursor at the mouse position.
-
-Some code borrowed from `mc/fake-cursor-at-point'."
-  (interactive "e")
-  (mouse-minibuffer-check event)
-  (let ((position (event-end event)))
-    (unless (windowp (posn-window position))
-      (user-error "Position not in text area of window"))
-    (select-window (posn-window position))
-    (let* ((point (posn-point position))
-           (overlays-at-point (overlays-at point)))
-      (if overlays-at-point
-          (dolist (ov overlays-at-point)
-            (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
-              (delete-overlay ov)
-              (setq kmacro-x-mc-cursors
-                    (delete ov kmacro-x-mc-cursors))))
-        (let ((ov (make-overlay point (1+ point) nil t)))
-          (unless kmacro-x-mc-mode
-            (kmacro-x-mc-mode 1))
-          (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
-          (overlay-put ov 'offsets '(0 . 0))
-          (push ov kmacro-x-mc-cursors))))))
 
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
