@@ -147,7 +147,7 @@ omitted from the recorded macro to prevent premature termination."
 (define-minor-mode kmacro-x-mc-mode
   "Record a keyboard macro to apply with multiple cursors.
 
-`RET' applies, `C-g' aborts."
+\\{kmacro-x-mc-mode-map}"
   :require 'macro-x
   :lighter " kmacro-mc"
   (if kmacro-x-mc-mode
