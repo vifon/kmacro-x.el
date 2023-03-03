@@ -37,7 +37,7 @@
 (defun kmacro-x-mc-mark-at-click (event)
   "Toggle the fake cursor at the mouse position.
 
-Some code borrowed from `mc/fake-cursor-at-point'."
+Some code borrowed from `mc/toggle-cursor-on-click'."
   (interactive "e")
   (mouse-minibuffer-check event)
   (let ((position (event-end event)))
