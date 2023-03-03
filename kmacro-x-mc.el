@@ -63,6 +63,12 @@
 (defun kmacro-x-mc--mark (replace &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
 
+Used internally by `kmacro-x-mc-mark-next' and
+`kmacro-x-mc-mark-previous'.
+
+With the REPLACE argument, remove the last cursor and replace it
+with the new one, essentially skipping one occurence of a match.
+
 Enables `kmacro-x-mc-mode' if not enabled yet, for the
 necessary initialization."
 
@@ -128,7 +134,9 @@ replace it with the new one, essentially skipping one occurence
 of a match.
 
 Activates `kmacro-x-mc-mode' with its keymap being used to either
-apply or abort the bulk edit."
+apply or abort the bulk edit.
+
+See also: `kmacro-x-mc-mark-previous'"
   (interactive "P")
   (kmacro-x-mc--mark replace))
 
@@ -180,6 +188,9 @@ omitted from the recorded macro to prevent premature termination."
 
 (define-minor-mode kmacro-x-mc-mode
   "Record a keyboard macro to apply with multiple cursors.
+
+Usually invoked from `kmacro-x-mc-mark-next', not by the
+user directory.
 
 \\{kmacro-x-mc-mode-map}"
   :lighter " kmacro-mc"
