@@ -260,7 +260,14 @@ user directory.
                           (- (mark)
                              (car bounds))))
 
+        (push `(kmacro-x-mc-mode . ,kmacro-x-mc-mode-map)
+              minor-mode-overriding-map-alist)
+
         (start-kbd-macro nil))
+
+    (setq minor-mode-overriding-map-alist
+          (assq-delete-all #'kmacro-x-mc-mode
+                           minor-mode-overriding-map-alist))
 
     (mapc #'delete-overlay kmacro-x-mc-cursors)
     (kill-local-variable 'kmacro-x-mc-regexp)
