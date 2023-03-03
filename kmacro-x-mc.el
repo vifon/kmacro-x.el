@@ -43,6 +43,23 @@
   '((t (:underline t)))
   "The face used for the original cursor when using `kmacro-x-mc-mode'.")
 
+(defcustom kmacro-x-mc-mark-whole-symbol nil
+  "When invoking `kmacro-x-mc-mark-next' with no region, mark the whole symbol.
+
+If nil, keep point in place and put the mark at the end of the symbol.
+
+If t, move the point to the end of the symbol and put the mark at its beginning.
+
+Example, with | being the point and ^ being the mark:
+
+    exam|ple-symbol
+                   ^
+
+    example-symbol|
+    ^
+"
+  :type 'boolean)
+
 (defcustom kmacro-x-mc-pre-apply-hook nil
   "Functions to run before applying the recorded keyboard macro to cursors."
   :type 'hook)
@@ -217,10 +234,14 @@ user directory.
           (setq-local kmacro-x-mc-cursors (list ov)))
 
         (unless (use-region-p)
-          ;; The end of the symbol is as good of a place as any for
-          ;; the mark.  Definitely better than whatever random
-          ;; position it was before.
-          (push-mark (cdr bounds)))
+          (if kmacro-x-mc-mark-whole-symbol
+              (progn
+                (push-mark (car bounds))
+                (goto-char (cdr bounds)))
+            ;; The end of the symbol is as good of a place as any for
+            ;; the mark.  Definitely better than whatever random
+            ;; position it was before.
+            (push-mark (cdr bounds))))
 
         (setq-local kmacro-x-mc-offsets
                     (cons (- (point)
