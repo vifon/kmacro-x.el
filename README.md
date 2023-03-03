@@ -43,3 +43,7 @@ Usage:
 2. Some arbitrary actions are being performed.
 3. `RET` can be used to apply the actions to all the other cursors or
    `C-g` can be used to abort the bulk operation.
+
+Note for the existing users: The old implementation of the multiple
+cursors is still available in `kmacro-x-mc-legacy.el`.  All the
+functions are the same, just with the `legacy` infix added.
