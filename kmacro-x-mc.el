@@ -56,8 +56,7 @@ Example, with | being the point and ^ being the mark:
                    ^
 
     example-symbol|
-    ^
-"
+    ^"
   :type 'boolean)
 
 (defcustom kmacro-x-mc-pre-apply-hook nil
@@ -89,8 +88,12 @@ with the new one, essentially skipping one occurence of a match.
 If `kmacro-x-mc-mode' isn't enabled yet, PREFIX instead inverts
 the `kmacro-x-mc-mark-whole-symbol' setting.
 
-Enables `kmacro-x-mc-mode' if not enabled yet, for the
-necessary initialization."
+Enables `kmacro-x-mc-mode' if not enabled yet, for the necessary
+initialization such as setting `kmacro-x-mc-regexp' and
+`kmacro-x-mc-offsets'.
+
+If BACKWARDS is non-nil, searches backwards.
+Otherwise searches forward."
 
   ;; Sanity check to prevent defining cursors with inconsistent
   ;; starting conditions.
@@ -180,7 +183,8 @@ See also: `kmacro-x-mc-mark-previous'"
 (defun kmacro-x-mc-mark-previous (&optional prefix)
   "Create a new fake cursor backwards.
 
-See `kmacro-x-mc-mark-next' for the details."
+See `kmacro-x-mc-mark-next' for the details and the PREFIX
+argument behavior."
   (interactive "P")
   (kmacro-x-mc--mark prefix 'backwards))
 
@@ -289,7 +293,7 @@ user directory.
 (defvar-local kmacro-x-mc-change-group nil)
 
 (defun kmacro-x-mc-undo-amalgamate-advice (&rest _)
-  "Amalgamate all the changes created with `kmacro-x-mc-mode' active."
+  "Amalgamate all the edits created with `kmacro-x-mc-mode' active."
   (if kmacro-x-mc-mode
       (progn
         (undo-boundary)

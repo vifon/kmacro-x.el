@@ -58,7 +58,7 @@
                    #'kmacro-x-undo-amalgamate-advice)))
 
 (defun kmacro-x-undo-amalgamate-advice (orig &rest args)
-  "Advice the ORIG function to amalgamate all the changes into one undo.
+  "Advice the ORIG function to amalgamate all the edits into one undo.
 
 ARGS are passed verbatim to ORIG.
 
