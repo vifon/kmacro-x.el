@@ -44,10 +44,9 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
     (unless (windowp (posn-window position))
       (user-error "Position not in text area of window"))
     (select-window (posn-window position))
-    (let* ((point (posn-point position))
-           (overlays-at-point (overlays-at point)))
+    (let ((point (posn-point position)))
       (unless (catch 'cursor
-                (dolist (ov overlays-at-point)
+                (dolist (ov (overlays-at point))
                   (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
                     (delete-overlay ov)
                     (setq kmacro-x-mc-cursors
