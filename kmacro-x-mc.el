@@ -135,6 +135,13 @@ necessary initialization."
           ;; have different offsets.
           (overlay-put ov 'offsets kmacro-x-mc-offsets)
 
+          ;; Store whether the region should be active for this
+          ;; cursor.  This allows to properly replicate the
+          ;; region-sensitive commands such as using `DEL' to delete
+          ;; the whole region without affecting the `kill-ring' (like
+          ;; `C-w' would).
+          (overlay-put ov 'region-active (region-active-p))
+
           (if prefix
               ;; Replace the first or last cursor with the new one.
               (let ((old-cursor (if backwards
@@ -188,6 +195,8 @@ See `kmacro-x-mc-mark-next' for the details."
                     (car (overlay-get ov 'offsets))))
       (push-mark (+ (overlay-start ov)
                     (cdr (overlay-get ov 'offsets))))
+      (when (overlay-get ov 'region-active)
+        (activate-mark))
       (call-last-kbd-macro)))
   (run-hooks 'kmacro-x-mc-post-apply-hook)
   (kmacro-x-mc-mode 0))
