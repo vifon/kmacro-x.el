@@ -276,20 +276,30 @@ user directory.
     (kill-local-variable 'kmacro-x-mc-offsets)
     (kill-local-variable 'kmacro-x-mc-cursors)))
 
+
+(defvar-local kmacro-x-mc-change-group nil)
+
+(defun kmacro-x-mc-undo-amalgamate-advice (&rest _)
+  "Amalgamate all the changes created with `kmacro-x-mc-mode' active."
+  (if kmacro-x-mc-mode
+      (progn
+        (undo-boundary)
+        (setq-local kmacro-x-mc-change-group (prepare-change-group))
+        (activate-change-group kmacro-x-mc-change-group))
+    (undo-amalgamate-change-group kmacro-x-mc-change-group)
+    (accept-change-group kmacro-x-mc-change-group)
+    (kill-local-variable 'kmacro-x-mc-change-group)))
+
 ;;;###autoload
 (define-minor-mode kmacro-x-mc-atomic-undo-mode
-  "Undo the whole `kmacro-x-mc-mode' bulk operation at once.
-
-Note: The original actions used for the macro recording are not
-undone, only the the macro executions (called from
-`kmacro-x-mc-apply')."
+  "Undo the whole `kmacro-x-mc-mode' bulk operation at once."
   :global t
   :require 'kmacro-x-mc
   (if kmacro-x-mc-atomic-undo-mode
-      (advice-add #'kmacro-x-mc-apply :around
-                  #'kmacro-x-undo-amalgamate-advice)
+      (advice-add #'kmacro-x-mc-mode :after
+                  #'kmacro-x-mc-undo-amalgamate-advice)
     (advice-remove #'kmacro-x-mc-apply
-                   #'kmacro-x-undo-amalgamate-advice)))
+                   #'kmacro-x-mc-undo-amalgamate-advice)))
 
 (provide 'kmacro-x-mc)
 ;;; kmacro-x-mc.el ends here
