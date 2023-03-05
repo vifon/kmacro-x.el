@@ -241,7 +241,8 @@ user directory.
                           regexp
                         (concat "\\_<" regexp "\\_>"))))
 
-        (let ((ov (make-overlay (car bounds) (cdr bounds))))
+        (let ((ov (make-overlay (car bounds) (cdr bounds)
+                                nil t nil)))
           (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
           (setq-local kmacro-x-mc-cursors (list ov)))
 
