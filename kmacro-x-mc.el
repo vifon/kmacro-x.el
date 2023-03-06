@@ -70,9 +70,6 @@ Example, with | being the point and ^ being the mark:
 (defvar-local kmacro-x-mc-regexp nil
   "A regexp matching the intended cursor positions.")
 
-(defvar-local kmacro-x-mc-offsets '(nil . nil)
-  "The cons with offsets of the point and the mark within the selection.")
-
 (defvar-local kmacro-x-mc-cursors nil
   "The overlays for displaying and keeping the cursor positions.
 
@@ -80,6 +77,12 @@ Example, with | being the point and ^ being the mark:
 overlay which can be recognized by it having its `face' property
 set to `kmacro-x-mc-main-cursor-face'.  The other (\"fake\")
 cursors use `kmacro-x-mc-cursor-face' instead.")
+
+(defvar-local kmacro-x-mc-main-cursor nil
+  "The overlay for the original cursor.
+
+Duplicated from `kmacro-x-mc-cursors' so it can be accessed at
+all times without searching through this list.")
 
 (defun kmacro-x-mc--mark (prefix &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
@@ -94,8 +97,8 @@ If `kmacro-x-mc-mode' isn't enabled yet, PREFIX instead inverts
 the `kmacro-x-mc-mark-whole-symbol' setting.
 
 Enables `kmacro-x-mc-mode' if not enabled yet, for the necessary
-initialization such as setting `kmacro-x-mc-regexp' and
-`kmacro-x-mc-offsets'.
+initialization such as setting `kmacro-x-mc-regexp',
+`kmacro-x-mc-cursors'. and `kmacro-x-mc-main-cursor'.
 
 If BACKWARDS is non-nil, searches backwards.
 Otherwise searches forward."
@@ -149,7 +152,8 @@ Otherwise searches forward."
 
           ;; Store the offsets per cursor as mouse-created cursors
           ;; have different offsets.
-          (overlay-put ov 'offsets kmacro-x-mc-offsets)
+          (overlay-put ov 'offsets
+                       (overlay-get kmacro-x-mc-main-cursor 'offsets))
 
           ;; Store whether the region should be active for this
           ;; cursor.  This allows to properly replicate the
@@ -267,11 +271,6 @@ user directory.
                           regexp
                         (concat "\\_<" regexp "\\_>"))))
 
-        (let ((ov (make-overlay (car bounds) (cdr bounds)
-                                nil t nil)))
-          (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
-          (setq-local kmacro-x-mc-cursors (list ov)))
-
         (unless (use-region-p)
           (if kmacro-x-mc-mark-whole-symbol
               (progn
@@ -282,11 +281,15 @@ user directory.
             ;; position it was before.
             (push-mark (cdr bounds))))
 
-        (setq-local kmacro-x-mc-offsets
-                    (cons (- (point)
-                             (car bounds))
-                          (- (mark)
-                             (car bounds))))
+        (let ((ov (make-overlay (car bounds) (cdr bounds)
+                                nil t nil)))
+          (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
+          (overlay-put ov 'offsets (cons (- (point)
+                                            (car bounds))
+                                         (- (mark)
+                                            (car bounds))))
+          (setq-local kmacro-x-mc-main-cursor ov)
+          (setq-local kmacro-x-mc-cursors (list ov)))
 
         (push `(kmacro-x-mc-mode . ,kmacro-x-mc-mode-map)
               minor-mode-overriding-map-alist)
@@ -299,7 +302,7 @@ user directory.
 
     (mapc #'delete-overlay kmacro-x-mc-cursors)
     (kill-local-variable 'kmacro-x-mc-regexp)
-    (kill-local-variable 'kmacro-x-mc-offsets)
+    (kill-local-variable 'kmacro-x-mc-main-cursor)
     (kill-local-variable 'kmacro-x-mc-cursors)))
 
 
