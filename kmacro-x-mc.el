@@ -105,9 +105,13 @@ Otherwise searches forward."
   (unless kmacro-x-mc-mode
     (let ((kmacro-x-mc-mark-whole-symbol
            ;; On the first call, use `prefix' to invert the
-           ;; `kmacro-x-mc-mark-whole-symbol' setting.
+           ;; `kmacro-x-mc-mark-whole-symbol' setting and then set it
+           ;; to nil to disable any behavior it would enable on the
+           ;; subsequent calls instead.
            (if prefix
-               (not kmacro-x-mc-mark-whole-symbol)
+               (prog1
+                   (not kmacro-x-mc-mark-whole-symbol)
+                 (setq prefix nil))
              kmacro-x-mc-mark-whole-symbol)))
       (kmacro-x-mc-mode 1)))
 
