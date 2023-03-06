@@ -98,7 +98,7 @@ the `kmacro-x-mc-mark-whole-symbol' setting.
 
 Enables `kmacro-x-mc-mode' if not enabled yet, for the necessary
 initialization such as setting `kmacro-x-mc-regexp',
-`kmacro-x-mc-cursors'. and `kmacro-x-mc-main-cursor'.
+`kmacro-x-mc-cursors' and `kmacro-x-mc-main-cursor'.
 
 If BACKWARDS is non-nil, searches backwards.
 Otherwise searches forward."
