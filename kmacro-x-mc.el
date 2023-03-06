@@ -74,7 +74,12 @@ Example, with | being the point and ^ being the mark:
   "The cons with offsets of the point and the mark within the selection.")
 
 (defvar-local kmacro-x-mc-cursors nil
-  "The overlays for displaying and keeping the cursor positions.")
+  "The overlays for displaying and keeping the cursor positions.
+
+`kmacro-x-mc-mode' initializes it with the original cursor's
+overlay which can be recognized by it having its `face' property
+set to `kmacro-x-mc-main-cursor-face'.  The other (\"fake\")
+cursors use `kmacro-x-mc-cursor-face' instead.")
 
 (defun kmacro-x-mc--mark (prefix &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
@@ -121,6 +126,10 @@ Otherwise searches forward."
 
   (save-excursion
     ;; Start the search right after/behind the last cursor.
+    ;; The original cursor is the "zeroth" cursor, so the list is
+    ;; never empty and both appending and prepending to it makes sense
+    ;; at all times once `kmacro-x-mc-mode' is active (it initializes
+    ;; it with the original cursor).
     (let ((ov (car (if backwards
                        kmacro-x-mc-cursors
                      (last kmacro-x-mc-cursors)))))
