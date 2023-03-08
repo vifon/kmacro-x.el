@@ -205,20 +205,32 @@ argument behavior."
   (interactive "P")
   (kmacro-x-mc--mark prefix 'backwards))
 
+(defun kmacro-x-mc--main-cursor-p (cursor)
+  "Check whether CURSOR is the main cursor and not a fake one."
+  (eq (overlay-get cursor 'face)
+      'kmacro-x-mc-main-cursor-face))
+
+(defun kmacro-x-mc--apply-cursor (cursor)
+  "Apply the recorded macro to CURSOR (from `kmacro-x-mc-cursors').
+
+CURSOR is internally an overlay."
+  (goto-char (+ (overlay-start cursor)
+                (car (overlay-get cursor 'offsets))))
+  (push-mark (+ (overlay-start cursor)
+                (cdr (overlay-get cursor 'offsets))))
+  (when (overlay-get cursor 'region-active)
+    (activate-mark))
+  (call-last-kbd-macro))
+
 (defun kmacro-x-mc-apply ()
   "Apply the recoded macro for each cursor."
   (interactive)
-  (end-kbd-macro)
+  (when defining-kbd-macro
+    (end-kbd-macro))
   (run-hooks 'kmacro-x-mc-pre-apply-hook)
   (dolist (ov kmacro-x-mc-cursors)
-    (unless (eq (overlay-get ov 'face) 'kmacro-x-mc-main-cursor-face)
-      (goto-char (+ (overlay-start ov)
-                    (car (overlay-get ov 'offsets))))
-      (push-mark (+ (overlay-start ov)
-                    (cdr (overlay-get ov 'offsets))))
-      (when (overlay-get ov 'region-active)
-        (activate-mark))
-      (call-last-kbd-macro)))
+    (unless (kmacro-x-mc--main-cursor-p ov)
+      (kmacro-x-mc--apply-cursor ov)))
   ;; Push the original point to the `mark-ring', so it's easy to
   ;; return there if needed.  Calculated from the original cursor's
   ;; overlay boundaries which should be correct even with the text

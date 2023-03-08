@@ -47,7 +47,7 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
     (let ((point (posn-point position)))
       (unless (catch 'cursor
                 (dolist (ov (overlays-at point))
-                  (when (eq (overlay-get ov 'face) 'kmacro-x-mc-cursor-face)
+                  (unless (kmacro-x-mc--main-cursor-p ov)
                     (delete-overlay ov)
                     (setq kmacro-x-mc-cursors
                           (delete ov kmacro-x-mc-cursors))
