@@ -245,6 +245,26 @@ CURSOR is internally an overlay."
   (run-hooks 'kmacro-x-mc-post-apply-hook)
   (kmacro-x-mc-mode 0))
 
+(defun kmacro-x-mc-apply-one ()
+  "Apply the recoded macro to one fake cursor.
+
+Keeps `kmacro-x-mc-mode' active to allow calling it more times,
+but stops the macro recording.
+
+Use `kmacro-x-mc-apply' to apply the macro to all the
+remaining cursors."
+  (interactive)
+  (when defining-kbd-macro
+    (end-kbd-macro))
+  (catch 'cursor
+    (dolist (ov kmacro-x-mc-cursors)
+      (unless (kmacro-x-mc--main-cursor-p ov)
+        (kmacro-x-mc--apply-cursor ov)
+        (delete-overlay ov)
+        (setq kmacro-x-mc-cursors
+              (delete ov kmacro-x-mc-cursors))
+        (throw 'cursor ov)))))
+
 (defun kmacro-x-mc-quit ()
   "Cancel the macro recording, disable `kmacro-x-mc-mode'.
 
@@ -266,6 +286,7 @@ omitted from the recorded macro to prevent premature termination."
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") #'kmacro-x-mc-quit)
     (define-key map (kbd "RET") #'kmacro-x-mc-apply)
+    (define-key map (kbd "M-RET") #'kmacro-x-mc-apply-one)
     map))
 
 (define-minor-mode kmacro-x-mc-mode
