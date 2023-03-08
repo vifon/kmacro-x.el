@@ -75,31 +75,24 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
       (rectangle-mark-mode 1))
     (rectangle-next-line)))
 
-
+;;;###autoload
 (defun kmacro-x-mc-pause ()
-  "Pause the macro recording to allow free movement."
+  "Pause the macro recording to allow free movement.
+
+Intended to be bound to `C-v' in `kmacro-x-mc-mode-map', calls
+`scroll-up-command' when the macro is already paused."
   (interactive)
   (if defining-kbd-macro
       (progn
         (cancel-kbd-macro-events)
         (save-excursion
-          ;; The docs say to not set `defining-kbd-macro', so let's do
-          ;; exactly this.  I believe setting it from nil to t would be bad,
-          ;; but setting it from t to nil should be just enough to pause the
-          ;; macro recording.  From a cursory research, Magit sets it to nil
-          ;; manually too, so we should be fine.
-          (let ((defining-kbd-macro nil))
-            (message "%s" (substitute-command-keys
-                           "Macro recording paused, press \
+          (end-kbd-macro)
+          (message "%s" (substitute-command-keys
+                         "Macro recording paused, press \
 `\\[exit-recursive-edit]' to exit recursive edit"))
-            (recursive-edit))))
+          (recursive-edit)
+          (start-kbd-macro 'append 'no-exec)))
     (call-interactively #'scroll-up-command)))
-
-;;;###autoload
-(defun kmacro-x-mc-enable-pause ()
-  "Bind the experimental pause functionality."
-  (interactive)
-  (define-key kmacro-x-mc-mode-map (kbd "C-v") #'kmacro-x-mc-pause))
 
 (provide 'kmacro-x-mc-extra)
 ;;; kmacro-x-mc-extra.el ends here
