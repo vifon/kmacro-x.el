@@ -268,10 +268,8 @@ remaining cursors."
 (defun kmacro-x-mc-quit ()
   "Cancel the macro recording, disable `kmacro-x-mc-mode'.
 
-If region is active, merely deactivate it instead.  This event is
-omitted from the recorded macro to prevent premature termination."
+If region is active, merely deactivate it instead."
   (interactive)
-  (cancel-kbd-macro-events)
   (if (region-active-p)
       (deactivate-mark)
     (kmacro-x-mc-mode 0)
