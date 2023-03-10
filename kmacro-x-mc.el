@@ -228,20 +228,14 @@ CURSOR is internally an overlay."
   (when defining-kbd-macro
     (end-kbd-macro))
   (run-hooks 'kmacro-x-mc-pre-apply-hook)
-  (dolist (ov kmacro-x-mc-cursors)
-    (unless (kmacro-x-mc--main-cursor-p ov)
-      (kmacro-x-mc--apply-cursor ov)))
-  ;; Push the original point to the `mark-ring', so it's easy to
-  ;; return there if needed.  Calculated from the original cursor's
-  ;; overlay boundaries which should be correct even with the text
-  ;; before it shifting around.  Note, this is the position from
-  ;; before the macro was recorded, not from right after it got
-  ;; recorded but before it got replayed.  The latter would be
-  ;; a little more troublesome to calculate.  Definitely possible but
-  ;; for now I don't see any benefit in one over the other.
-  (push-mark (let ((ov kmacro-x-mc-main-cursor))
-               (+ (overlay-start ov)
-                  (car (overlay-get ov 'offsets)))))
+  (let ((marker (point-marker)))
+    (dolist (ov kmacro-x-mc-cursors)
+      (unless (kmacro-x-mc--main-cursor-p ov)
+        (kmacro-x-mc--apply-cursor ov)))
+    ;; Push the original point to the `mark-ring', so it's easy to
+    ;; return there if needed.
+    (push-mark marker)
+    (set-marker marker nil))
   (run-hooks 'kmacro-x-mc-post-apply-hook)
   (kmacro-x-mc-mode 0))
 
