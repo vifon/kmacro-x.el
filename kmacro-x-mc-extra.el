@@ -85,7 +85,7 @@ Intended to be bound to `C-v' in `kmacro-x-mc-mode-map', calls
   (if defining-kbd-macro
       (progn
         (cancel-kbd-macro-events)
-        (save-excursion
+        (save-mark-and-excursion
           (end-kbd-macro)
           (message "%s" (substitute-command-keys
                          "Macro recording paused, press \
