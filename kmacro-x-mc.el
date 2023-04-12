@@ -214,6 +214,7 @@ argument behavior."
   "Apply the recorded macro to CURSOR (from `kmacro-x-mc-cursors').
 
 CURSOR is internally an overlay."
+  (overlay-put cursor 'display nil)
   (goto-char (+ (overlay-start cursor)
                 (car (overlay-get cursor 'offsets))))
   (push-mark (+ (overlay-start cursor)
@@ -324,6 +325,15 @@ user directory.
                                             (car bounds))
                                          (- (mark)
                                             (car bounds))))
+          (overlay-put ov 'modification-hooks
+                       (list
+                        (lambda (main-cursor after-p _beg _end &optional _length)
+                          (when after-p
+                            (dolist (cursor kmacro-x-mc-cursors)
+                              (unless (kmacro-x-mc--main-cursor-p cursor)
+                                (overlay-put cursor 'display
+                                             (buffer-substring (overlay-start main-cursor)
+                                                               (overlay-end main-cursor)))))))))
           (setq-local kmacro-x-mc-main-cursor ov)
           (setq-local kmacro-x-mc-cursors (list ov)))
 
