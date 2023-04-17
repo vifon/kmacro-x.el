@@ -116,7 +116,7 @@ all times without searching through this list.")
          (ov (make-overlay beg end nil front-advance rear-advance)))
     (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
     (overlay-put ov 'offsets (cons (- (point) beg)
-                                   (- (mark) end)))
+                                   (- (mark) beg)))
     (when kmacro-x-mc-live-preview
       (let ((hooks (list #'kmacro-x-mc--modification-hook-live-preview)))
         (overlay-put ov 'modification-hooks hooks)
