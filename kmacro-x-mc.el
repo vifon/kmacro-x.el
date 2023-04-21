@@ -67,6 +67,18 @@ Example, with | being the point and ^ being the mark:
   "Functions to run after applying the recorded keyboard macro to cursors."
   :type 'hook)
 
+(defcustom kmacro-x-mc-live-preview nil
+  "Experimental live previews of the edits performed within the cursors.
+
+Changes performed outside of the cursors are not displayed, but
+will be replicated as usual.
+
+Turning this on makes it no longer possible to move the cursor
+onto the fake cursors / selections.  While technically a bug,
+this scenario is so rare and so difficult to get right (from the
+user's perspective), this is just acknowledged here."
+  :type 'boolean)
+
 (defvar-local kmacro-x-mc-regexp nil
   "A regexp matching the intended cursor positions.")
 
@@ -83,6 +95,58 @@ cursors use `kmacro-x-mc-cursor-face' instead.")
 
 Duplicated from `kmacro-x-mc-cursors' so it can be accessed at
 all times without searching through this list.")
+
+
+(defun kmacro-x-mc--modification-hook-live-preview
+    (ov after-p _beg _end &optional _length)
+  "Overlay modification-hook updating all the other overlays."
+  (when after-p
+    (dolist (cursor kmacro-x-mc-cursors)
+      (unless (kmacro-x-mc--main-cursor-p cursor)
+        (overlay-put cursor 'display
+                     (buffer-substring (overlay-start ov)
+                                       (overlay-end ov)))))))
+
+(defun kmacro-x-mc--make-main-cursor (beg end)
+  "Create an overlay representing the main cursor from BEG to END."
+
+  ;; With `kmacro-x-mc-live-preview' inverting the *-advance arguments
+  ;; of `make-overlay' it's possible to use the overlay
+  ;; modification-hooks to capture the edits at the cursor boundaries.
+  ;; With `kmacro-x-mc-live-preview' being nil, the difference is only
+  ;; visual and this setting here is subjectively the most visually
+  ;; pleasing one (according to the author).
+  (let* ((front-advance (not kmacro-x-mc-live-preview))
+         (rear-advance kmacro-x-mc-live-preview)
+         (ov (make-overlay beg end nil front-advance rear-advance)))
+    (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
+    (overlay-put ov 'offsets (cons (- (point) beg)
+                                   (- (mark) beg)))
+    (when kmacro-x-mc-live-preview
+      (let ((hooks (list #'kmacro-x-mc--modification-hook-live-preview)))
+        (overlay-put ov 'modification-hooks hooks)
+        (overlay-put ov 'insert-in-front-hooks hooks)
+        (overlay-put ov 'insert-behind-hooks hooks)))
+    ov))
+
+(defun kmacro-x-mc--make-cursor (beg end)
+  "Create an overlay representing a fake cursor from BEG to END."
+  (let ((ov (make-overlay beg end nil t nil)))
+    (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
+
+    ;; Store the offsets per cursor as mouse-created cursors
+    ;; have different offsets.
+    (overlay-put ov 'offsets
+                 (overlay-get kmacro-x-mc-main-cursor 'offsets))
+
+    ;; Store whether the region should be active for this
+    ;; cursor.  This allows to properly replicate the
+    ;; region-sensitive commands such as using `DEL' to delete
+    ;; the whole region without affecting the `kill-ring' (like
+    ;; `C-w' would).
+    (overlay-put ov 'region-active (region-active-p))
+
+    ov))
 
 (defun kmacro-x-mc--mark (prefix &optional backwards)
   "Create a new fake cursor for `kmacro-x-mc-mode'.
@@ -145,23 +209,8 @@ Otherwise searches forward."
           (if backwards
               (search-backward-regexp kmacro-x-mc-regexp nil 'noerror)
             (search-forward-regexp kmacro-x-mc-regexp nil 'noerror)))
-        (let ((ov (make-overlay (match-beginning 0)
-                                (match-end 0)
-                                nil t nil)))
-          (overlay-put ov 'face 'kmacro-x-mc-cursor-face)
-
-          ;; Store the offsets per cursor as mouse-created cursors
-          ;; have different offsets.
-          (overlay-put ov 'offsets
-                       (overlay-get kmacro-x-mc-main-cursor 'offsets))
-
-          ;; Store whether the region should be active for this
-          ;; cursor.  This allows to properly replicate the
-          ;; region-sensitive commands such as using `DEL' to delete
-          ;; the whole region without affecting the `kill-ring' (like
-          ;; `C-w' would).
-          (overlay-put ov 'region-active (region-active-p))
-
+        (let ((ov (kmacro-x-mc--make-cursor (match-beginning 0)
+                                            (match-end 0))))
           (if prefix
               ;; Replace the first or last cursor with the new one.
               (let ((old-cursor (if backwards
@@ -214,6 +263,7 @@ argument behavior."
   "Apply the recorded macro to CURSOR (from `kmacro-x-mc-cursors').
 
 CURSOR is internally an overlay."
+  (overlay-put cursor 'display nil)
   (goto-char (+ (overlay-start cursor)
                 (car (overlay-get cursor 'offsets))))
   (push-mark (+ (overlay-start cursor)
@@ -317,13 +367,8 @@ user directory.
             ;; position it was before.
             (push-mark (cdr bounds))))
 
-        (let ((ov (make-overlay (car bounds) (cdr bounds)
-                                nil t nil)))
-          (overlay-put ov 'face 'kmacro-x-mc-main-cursor-face)
-          (overlay-put ov 'offsets (cons (- (point)
-                                            (car bounds))
-                                         (- (mark)
-                                            (car bounds))))
+        (let ((ov (kmacro-x-mc--make-main-cursor (car bounds)
+                                                 (cdr bounds))))
           (setq-local kmacro-x-mc-main-cursor ov)
           (setq-local kmacro-x-mc-cursors (list ov)))
 
