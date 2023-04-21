@@ -71,7 +71,12 @@ Example, with | being the point and ^ being the mark:
   "Experimental live previews of the edits performed within the cursors.
 
 Changes performed outside of the cursors are not displayed, but
-will be replicated as usual."
+will be replicated as usual.
+
+Turning this on makes it no longer possible to move the cursor
+onto the fake cursors / selections.  While technically a bug,
+this scenario is so rare and so difficult to get right (from the
+user's perspective), this is just acknowledged here."
   :type 'boolean)
 
 (defvar-local kmacro-x-mc-regexp nil
