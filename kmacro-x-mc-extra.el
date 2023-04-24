@@ -37,6 +37,8 @@
 (defun kmacro-x-mc-mark-at-click (event)
   "Toggle the fake cursor at the mouse position.
 
+EVENT is the mouse click event.
+
 Some code borrowed from `mc/toggle-cursor-on-click'."
   (interactive "e")
   (mouse-minibuffer-check event)
@@ -62,7 +64,9 @@ Some code borrowed from `mc/toggle-cursor-on-click'."
 
 ;;;###autoload
 (defun kmacro-x-mc-mark-next-or-rect ()
-  "Like `kmacro-x-mc-mark-next' but fall back to
+  "A smart version of `kmacro-x-mc-mark-next' with a fallback.
+
+Acts just like `kmacro-x-mc-mark-next' but falls back to
 `rectangle-mark-mode' when there is no selection."
   (interactive)
   (require 'rect)

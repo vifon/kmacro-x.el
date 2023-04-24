@@ -99,7 +99,10 @@ all times without searching through this list.")
 
 (defun kmacro-x-mc--modification-hook-live-preview
     (ov after-p _beg _end &optional _length)
-  "Overlay modification-hook updating all the other overlays."
+  "Overlay modification-hook updating all the other overlays.
+
+OV and AFTER-P (and other ignored arguments) are passed according
+to the modification-hook overlay API."
   (when after-p
     (dolist (cursor kmacro-x-mc-cursors)
       (unless (kmacro-x-mc--main-cursor-p cursor)
