@@ -35,6 +35,8 @@
   "Multiple cursors implemented with keyboard macros."
   :group 'kmacro-x)
 
+(defvar kmacro-x-mc-mode)
+
 (defface kmacro-x-mc-cursor-face
   '((t (:inverse-video t)))
   "The face used for the fake cursors created in `kmacro-x-mc-mode'.")
@@ -224,7 +226,8 @@ Otherwise searches forward."
             ;; Either append or prepend the new cursor.
             (if backwards
                 (push ov kmacro-x-mc-cursors)
-              (setq kmacro-x-mc-cursors (append kmacro-x-mc-cursors (list ov))))))
+              (setq kmacro-x-mc-cursors
+                    (append kmacro-x-mc-cursors (list ov))))))
       (message "No further matches"))))
 
 ;;;###autoload

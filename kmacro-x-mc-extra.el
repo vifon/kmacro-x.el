@@ -29,6 +29,8 @@
 
 (require 'kmacro-x-mc)
 
+(require 'rect)
+
 (defgroup kmacro-x-mc-extra nil
   "Additional functionality for the multiple cursors."
   :group 'kmacro-x-mc)
