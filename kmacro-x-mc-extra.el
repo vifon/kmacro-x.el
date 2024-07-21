@@ -44,6 +44,7 @@ EVENT is the mouse click event.
 Some code borrowed from `mc/toggle-cursor-on-click'."
   (interactive "e")
   (mouse-minibuffer-check event)
+  (cancel-kbd-macro-events)
   (let ((position (event-end event)))
     (unless (windowp (posn-window position))
       (user-error "Position not in text area of window"))
