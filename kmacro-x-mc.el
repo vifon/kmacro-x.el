@@ -337,6 +337,13 @@ If region is active, merely deactivate it instead."
     (define-key map (kbd "M-RET") #'kmacro-x-mc-apply-one)
     map))
 
+(defvar kmacro-x-mc--bounds-override nil
+  "An alternate boundaries of the edited text element.
+
+Unless it's non-nil, the boundaries of the symbol at point are
+used.  This variable can override this behavior in commands using
+different semantics, for instance mouse-placed cursors.")
+
 (define-minor-mode kmacro-x-mc-mode
   "Record a keyboard macro to apply with multiple cursors.
 
@@ -348,11 +355,8 @@ user directory.
   (if kmacro-x-mc-mode
       (let ((bounds (if (use-region-p)
                         (cons (region-beginning) (region-end))
-                      (or (bounds-of-thing-at-point 'symbol)
-                          ;; A technically correct fallback.
-                          ;; Relevant mostly for the alternative ways to
-                          ;; create cursors such as mouse clicks.
-                          (cons (point) (1+ (point)))))))
+                      (or kmacro-x-mc--bounds-override
+                          (bounds-of-thing-at-point 'symbol)))))
 
         (let ((regexp (regexp-quote
                        (buffer-substring-no-properties
