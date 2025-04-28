@@ -406,8 +406,8 @@ user directory.
         (undo-boundary)
         (setq-local kmacro-x-mc-change-group (prepare-change-group))
         (activate-change-group kmacro-x-mc-change-group))
-    (undo-amalgamate-change-group kmacro-x-mc-change-group)
     (accept-change-group kmacro-x-mc-change-group)
+    (undo-amalgamate-change-group kmacro-x-mc-change-group)
     (kill-local-variable 'kmacro-x-mc-change-group)))
 
 ;;;###autoload
