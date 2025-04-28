@@ -6,7 +6,7 @@
 ;; URL: https://github.com/vifon/kmacro-x.el
 ;; Keywords: convenience
 ;; Version: 0.9
-;; Package-Requires: ((emacs "27.2"))
+;; Package-Requires: ((emacs "29.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -60,18 +60,12 @@
 (defun kmacro-x-undo-amalgamate-advice (orig &rest args)
   "Advice the ORIG function to amalgamate all the edits into one undo.
 
-ARGS are passed verbatim to ORIG.
-
-An undo boundary is placed beforehand to ensure the consecutive
-calls won't get auto-amalgamated."
+ARGS are passed verbatim to ORIG."
+  ;; Place an `undo-boundary' to ensure the consecutive calls won't
+  ;; get auto-amalgamated.
   (undo-boundary)
-  (let ((cg (prepare-change-group)))
-    (unwind-protect
-        (progn
-          (activate-change-group cg)
-          (apply orig args))
-      (undo-amalgamate-change-group cg)
-      (accept-change-group cg))))
+  (with-undo-amalgamate
+    (apply orig args)))
 
 
 (provide 'kmacro-x)
