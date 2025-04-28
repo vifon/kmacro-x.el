@@ -44,6 +44,10 @@ Usage:
 3. `RET` can be used to apply the actions to all the other cursors or
    `C-g` can be used to abort the bulk operation.
 
-Note for the existing users: The old implementation of the multiple
-cursors is still available in `kmacro-x-mc-legacy.el`.  All the
-functions are the same, just with the `legacy` infix added.
+`kmacro-x-mc-atomic-undo-mode` can be enabled to make each
+`macro-x-mc` change undoable as a whole.
+
+Note for the existing users: The olded implementation of the multiple
+cursors provided by this package is still available in
+`kmacro-x-mc-legacy.el`.  All the functions are the same as before,
+just with the `legacy` infix added.
