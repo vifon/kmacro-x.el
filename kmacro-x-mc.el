@@ -61,6 +61,20 @@ Example, with | being the point and ^ being the mark:
     ^"
   :type 'boolean)
 
+(defcustom kmacro-x-mc-preserve-last-macro t
+  "If non-nil, preserve the previous value of `last-kbd-macro'.
+
+If non-nil, `kmacro-x-mc-mode' saves the user's own `last-kbd-macro' to
+restore it later.  The macro recorded by `kmacro-x-mc-mode' is then
+discarded.  This allows the user to ignore the inner workings of
+`kmacro-x-mc-mode' as the plain keyboard macros are not disturbed.
+
+If nil, `kmacro-x-mc-mode' behaves like a regular keyboard macro and
+keeps the recorded macro in `last-kbd-macro'.  The previous value is
+pushed on `kmacro-ring'.  The macro recorded by `kmacro-x-mc-mode' can
+then be reused."
+  :type 'boolean)
+
 (defcustom kmacro-x-mc-pre-apply-hook nil
   "Functions to run before applying the recorded keyboard macro to cursors."
   :type 'hook)
@@ -385,6 +399,17 @@ user directory.
         (push `(kmacro-x-mc-mode . ,kmacro-x-mc-mode-map)
               minor-mode-overriding-map-alist)
 
+        (when kmacro-x-mc-preserve-last-macro
+          ;; Save the user's own `last-kbd-macro' and the associated
+          ;; counter to restore them later.  When `last-kbd-macro' is
+          ;; nil, `kmacro-ring' isn't modified, no extra handling
+          ;; is needed.
+          (setq-local kmacro-x-mc-stored-macro
+                      (list last-kbd-macro
+                            kmacro-counter
+                            kmacro-counter-format-start))
+          (setq last-kbd-macro nil))
+
         (start-kbd-macro nil))
 
     (setq minor-mode-overriding-map-alist
@@ -394,7 +419,14 @@ user directory.
     (mapc #'delete-overlay kmacro-x-mc-cursors)
     (kill-local-variable 'kmacro-x-mc-regexp)
     (kill-local-variable 'kmacro-x-mc-main-cursor)
-    (kill-local-variable 'kmacro-x-mc-cursors)))
+    (kill-local-variable 'kmacro-x-mc-cursors)
+
+    (when (bound-and-true-p kmacro-x-mc-stored-macro)
+      ;; Restore the previous value of `last-kbd-macro' and its counter.
+      (setq last-kbd-macro (pop kmacro-x-mc-stored-macro)
+            kmacro-counter (pop kmacro-x-mc-stored-macro)
+            kmacro-counter-format-start (pop kmacro-x-mc-stored-macro))
+      (kill-local-variable 'kmacro-x-mc-stored-macro))))
 
 
 (defvar-local kmacro-x-mc-change-group nil)
