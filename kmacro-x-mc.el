@@ -404,7 +404,7 @@ user directory.
           ;; counter to restore them later.  When `last-kbd-macro' is
           ;; nil, `kmacro-ring' isn't modified, no extra handling
           ;; is needed.
-          (setq-local kmacro-x-mc-stored-macro (kmacro-ring-head))
+          (setq-local kmacro-x-mc-stored-last-macro (kmacro-ring-head))
           (setq last-kbd-macro nil))
 
         (start-kbd-macro nil))
@@ -418,10 +418,10 @@ user directory.
     (kill-local-variable 'kmacro-x-mc-main-cursor)
     (kill-local-variable 'kmacro-x-mc-cursors)
 
-    (when (bound-and-true-p kmacro-x-mc-stored-macro)
+    (when (bound-and-true-p kmacro-x-mc-stored-last-macro)
       ;; Restore the previous value of `last-kbd-macro' and its counter.
-      (kmacro-split-ring-element kmacro-x-mc-stored-macro)
-      (kill-local-variable 'kmacro-x-mc-stored-macro))))
+      (kmacro-split-ring-element kmacro-x-mc-stored-last-macro)
+      (kill-local-variable 'kmacro-x-mc-stored-last-macro))))
 
 
 (defvar-local kmacro-x-mc-change-group nil)
