@@ -1,6 +1,6 @@
 ;;; kmacro-x-mc-extra.el --- Additional functionality for the multiple cursors  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022-2023  Wojciech Siewierski
+;; Copyright (C) 2022-2025  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski
 ;; URL: https://github.com/vifon/kmacro-x.el
