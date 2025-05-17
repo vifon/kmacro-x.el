@@ -45,9 +45,16 @@ Usage:
    `C-g` can be used to abort the bulk operation.
 
 `kmacro-x-mc-atomic-undo-mode` can be enabled to make each
-`macro-x-mc` change undoable as a whole.
+`macro-x-mc` change undoable as a whole, similarly to what
+`kmacro-x-atomic-undo-mode` does to each cursor individually.
 
-Note for the existing users: The olded implementation of the multiple
+Notable settings, check their documentation for details:
+
+- `kmacro-x-mc-live-preview` (default: `nil`)
+- `kmacro-x-mc-mark-whole-symbol` (default: `nil`)
+- `kmacro-x-mc-preserve-last-macro` (default: `t`)
+
+Note for the existing users: The older implementation of the multiple
 cursors provided by this package is still available in
 `kmacro-x-mc-legacy.el`.  All the functions are the same as before,
 just with the `legacy` infix added.
