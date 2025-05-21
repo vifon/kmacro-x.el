@@ -445,7 +445,7 @@ user directory.
   (if kmacro-x-mc-atomic-undo-mode
       (advice-add #'kmacro-x-mc-mode :after
                   #'kmacro-x-mc-undo-amalgamate-advice)
-    (advice-remove #'kmacro-x-mc-apply
+    (advice-remove #'kmacro-x-mc-mode
                    #'kmacro-x-mc-undo-amalgamate-advice)))
 
 (provide 'kmacro-x-mc)
